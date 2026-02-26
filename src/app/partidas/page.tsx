@@ -97,7 +97,7 @@ export default function PartidasPage() {
 }
 
 function MatchCard({ match, userId, formatDate, past }: {
-    match: Match; userId: string; formatDate: (d: Date) => string; DAYS_PT: string[]; past?: boolean;
+    match: Match; userId: string; formatDate: (d: Date) => string; past?: boolean;
 }) {
     const router = useRouter();
     const isParticipating = match.participants.includes(userId);
@@ -212,8 +212,4 @@ function CreateMatchModal({ userId, onClose, onCreated }: {
             </div>
         </div>
     );
-}
-
-function useState<T>(init: T): [T, (v: T) => void] {
-    return require('react').useState(init);
 }

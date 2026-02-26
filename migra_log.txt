@@ -1,0 +1,35 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy para Windows                              
+-------------------------------------------------------------------------------
+
+  Iniciado: quinta-feira, 26 de fevereiro de 2026 18:24:47
+   Origem : C:\Users\MARCIO ANSOLIN\OneDrive\PROJETOS APP ANTIGRAVITY 2026\Futebol Facil\futebol-facil\
+     Destino : C:\Projetos Antigravity\futebol-facil\
+
+    Arquivos: *.*
+	    
+Arquivos Exc: package-lock.json
+	    
+ Diret¢rios Exc: node_modules
+	    .git
+	    
+  Op‡äes: *.* /S /E /COPYALL /NP /R:1000000 /W:30 
+
+------------------------------------------------------------------------------
+
+ERRO: vocˆ nÆo tem o direito de usu rio Gerenciar Auditoria.
+*****  Vocˆ precisa disso para copiar as informa‡äes de auditoria (/COPY:U ou /COPYALL).
+
+              Uso Simples :: ROBOCOPY origem destino /MIR
+
+                   origem :: Diret¢rio de Origem (unidade:\caminho ou
+                             \\servidor\compartilhamento\caminho).
+                  destino :: Diret¢rio de Destino  (unidade:\caminho ou
+                             \\servidor\compartilhamento\caminho).
+                     /MIR :: espelhar uma  rvore de diret¢rio completa.
+
+    Para obter mais informa‡äes sobre uso, execute ROBOCOPY /?
+
+                                                          
+****  /MIR pode EXCLUIR arquivos e tamb‚m copi -los!
