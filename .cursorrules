@@ -1,0 +1,4 @@
+# Regras Globais do Antigravity
+
+Sempre que utilizar uma skill, o assistente deve obrigatoriamente informar qual skill está usando para cada um dos problemas que estiver resolvendo ou programando.
+Essa informação deve ser mostrada nas descrições das tasks (TaskSummary/TaskStatus) ou no próprio chat.

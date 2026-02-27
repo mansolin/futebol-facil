@@ -97,10 +97,16 @@ export default function DashboardPage() {
                                 }}
                             >
                                 {/* Glowing Top Tag */}
-                                <div className="self-start mb-auto z-10">
-                                    <span className="bg-[var(--primary)] text-black text-[10px] font-black uppercase tracking-widest py-1.5 px-3 rounded-full shadow-[0_0_15px_rgba(0,255,100,0.5)]">
+                                <div className="self-start mb-auto z-10 w-full flex items-center justify-between">
+                                    <span className="bg-[var(--primary)] text-black text-[10px] font-black uppercase tracking-widest py-1.5 px-3 rounded-full shadow-[0_0_15px_rgba(0,255,100,0.5)] inline-block">
                                         Próximo Jogo
                                     </span>
+                                    <button
+                                        onClick={(e) => { e.preventDefault(); router.push(`/partidas/${nextMatch.id}/membros`); }}
+                                        className="bg-black/40 backdrop-blur-md border border-[var(--primary)]/30 text-white text-[9px] font-black uppercase tracking-widest py-1.5 px-3 rounded-full hover:bg-white/10 transition-colors flex items-center gap-1.5 shadow-[0_4px_10px_rgba(0,0,0,0.3)] active:scale-95"
+                                    >
+                                        <span>👥</span> Membros
+                                    </button>
                                 </div>
 
                                 {/* Content */}

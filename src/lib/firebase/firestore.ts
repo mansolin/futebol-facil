@@ -142,6 +142,12 @@ export async function declineParticipation(matchId: string, userId: string): Pro
     });
 }
 
+export async function inviteUserToMatch(matchId: string, userId: string): Promise<void> {
+    await updateDoc(doc(db, 'matches', matchId), {
+        [`participants.${userId}`]: { status: 'invited', paid: false },
+    });
+}
+
 export async function cancelParticipation(matchId: string, userId: string): Promise<void> {
     const matchRef = doc(db, 'matches', matchId);
 
