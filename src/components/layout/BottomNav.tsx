@@ -3,12 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navItems = [
-    { href: '/', label: 'Início', icon: HomeIcon },
-    { href: '/partidas', label: 'Partidas', icon: MatchIcon },
-    { href: '/pagamentos', label: 'Pagamentos', icon: PayIcon },
-    { href: '/perfil', label: 'Perfil', icon: UserIcon },
-];
+const navItems = [];
 
 function HomeIcon() {
     return (

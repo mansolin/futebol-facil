@@ -176,149 +176,148 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
     return (
         <div style={{ background: 'var(--bg)', minHeight: '100dvh' }}>
             <Header title="Detalhes do Jogo" />
-            <main className="page-container !pt-0">
-                {/* Hero Section with Image */}
-                <div className="relative h-64 -mx-5 mb-8">
-                    <div
-                        className="absolute inset-0 z-0 bg-cover bg-center"
-                        style={{
-                            backgroundImage: `url(${match.imageUrl || 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop'})`,
-                        }}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg)] via-transparent to-transparent opacity-90"></div>
-                    </div>
-
-                    <div className="relative z-10 h-full flex flex-col justify-end px-5 pb-4">
-                        <div className="flex gap-2 mb-3">
-                            <span className="badge badge-green !bg-[var(--primary)] !text-[var(--primary-text)] uppercase text-[10px]">Próximo Jogo</span>
-                            <span className="badge bg-white/10 backdrop-blur-md text-white/80 uppercase text-[10px]">
-                                {match.isRecurring ? 'Semanal' : 'Evento Único'}
+            <main className="page-container px-3 pt-6 pb-32">
+                {/* Compact Hero Card */}
+                <div
+                    className="rounded-[1rem] p-4 mb-6 relative overflow-hidden border border-[var(--primary)]/20"
+                    style={{
+                        background: `linear-gradient(to right, rgba(15, 20, 30, 0.95) 0%, rgba(10, 15, 20, 0.8) 100%), url(${match.imageUrl || 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop'})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                    }}
+                >
+                    <div className="flex items-start justify-between relative z-10">
+                        <div>
+                            <span className="bg-[var(--primary)] text-black text-[8px] font-black uppercase tracking-widest py-1 px-2.5 rounded-md mb-2 inline-block">
+                                Próximo Jogo
                             </span>
-                        </div>
-                        <h2 className="text-4xl font-black text-white leading-tight uppercase tracking-tighter">
-                            {match.title}
-                        </h2>
-                    </div>
-                </div>
-
-                {/* Info Grid - Modern Glassmorphism Cells */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Data</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-base">📅</span>
-                            <span className="text-sm font-bold">{formatDate(match.date).split(',')[0]}</span>
-                        </div>
-                    </div>
-                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Horário</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-base">🕒</span>
-                            <span className="text-sm font-bold">{match.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div>
-                    </div>
-                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Investimento</span>
-                        <div className="flex items-center gap-2 text-[var(--primary)]">
-                            <span className="text-base">💰</span>
-                            <span className="text-sm font-black">R$ {match.pricePerPlayer.toFixed(2)}</span>
-                        </div>
-                    </div>
-                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Vagas</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-base">👥</span>
-                            <span className="text-sm font-bold">{confirmedCount} / {match.maxPlayers}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Location Card */}
-                <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 mb-8 flex items-center justify-between">
-                    <div>
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1 block">Onde vai ser</span>
-                        <p className="font-bold text-base">{match.location}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-xl">📍</div>
-                </div>
-
-                {/* Participant List Header */}
-                <div className="flex items-center justify-between mb-4 px-2">
-                    <h3 className="text-xl font-black uppercase tracking-tight">Escalação</h3>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-[var(--text-muted)]">{confirmedCount} confirmados</span>
-                    </div>
-                </div>
-
-                {/* Styled Participant List */}
-                <div className="space-y-3 mb-24">
-                    {participantsArray.filter(p => p.status === 'confirmed').map((p) => {
-                        const pProfile = participantProfiles[p.uid];
-                        const displayName = p.uid === user?.uid ? (profile?.displayName ?? 'Você') : (pProfile?.displayName ?? 'Jogador');
-
-                        return (
-                            <div key={p.uid} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-3 flex items-center justify-between group transition-all hover:border-[var(--primary)]/30">
-                                <div className="flex items-center gap-3">
-                                    <div className="relative">
-                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[var(--bg-elevated)] bg-[var(--bg-elevated)] flex items-center justify-center font-bold text-lg text-[var(--primary)]">
-                                            {pProfile?.photoURL ? (
-                                                <img src={pProfile.photoURL} alt={displayName} className="w-full h-full object-cover" />
-                                            ) : displayName.charAt(0).toUpperCase()}
-                                        </div>
-                                        {p.paid && (
-                                            <div className="absolute -bottom-1 -right-1 bg-[var(--primary)] text-[var(--primary-text)] w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow-sm border-2 border-[var(--bg-card)]">
-                                                ✓
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold text-sm">{displayName}</span>
-                                            {p.uid === user?.uid && (
-                                                <span className="text-[8px] bg-white/5 py-0.5 px-1.5 rounded-full text-[var(--text-muted)] font-bold uppercase">Você</span>
-                                            )}
-                                        </div>
-                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${p.paid ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
-                                            {p.paid ? 'Pagamento Confirmado' : 'Aguardando Pagamento'}
-                                        </span>
-                                    </div>
+                            <h2 className="text-xl font-black text-white italic tracking-wide uppercase mt-1 mb-1" style={{ transform: 'skewX(-5deg)' }}>
+                                {match.title}
+                            </h2>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[var(--primary)] text-[10px]">📅</span>
+                                    <span className="text-[10px] font-bold text-white/80">{formatDate(match.date).replace(/:00$/, '').split(' ').slice(1).join(' ').replace(',', '')}</span>
                                 </div>
-
-                                {isOwner && (
-                                    <button
-                                        onClick={() => handleTogglePayment(p.uid, p.paid)}
-                                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${p.paid ? 'bg-[var(--success-muted)] text-[var(--success)] shadow-inner' : 'bg-white/5 text-[var(--text-muted)]'}`}
-                                    >
-                                        <span className="text-xl">💳</span>
-                                    </button>
-                                )}
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[var(--primary)] text-[10px]">📍</span>
+                                    <span className="text-[10px] font-bold text-white/80">{match.location}</span>
+                                </div>
                             </div>
-                        );
-                    })}
-
-                    {/* Declined Section Header */}
-                    {participantsArray.some(p => p.status === 'declined') && (
-                        <>
-                            <div className="pt-6 mb-4 px-2">
-                                <h3 className="text-lg font-black text-[var(--text-muted)] uppercase tracking-tight">Não vai poder ir</h3>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {participantsArray.filter(p => p.status === 'declined').map((p) => {
-                                    const pProfile = participantProfiles[p.uid];
-                                    const displayName = pProfile?.displayName?.split(' ')[0] ?? 'Jogador';
-                                    return (
-                                        <div key={p.uid} className="bg-white/5 border border-[var(--border)] rounded-full px-3 py-1.5 flex items-center gap-2 grayscale blur-[0.5px]">
-                                            <div className="w-6 h-6 rounded-full overflow-hidden bg-[var(--bg-elevated)] text-[10px] flex items-center justify-center font-bold">
-                                                {pProfile?.photoURL ? <img src={pProfile.photoURL} alt={displayName} /> : displayName.charAt(0)}
-                                            </div>
-                                            <span className="text-xs font-medium text-[var(--text-muted)]">{displayName}</span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </>
-                    )}
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                            <span className="border border-[var(--primary)] text-[var(--primary)] text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-[var(--primary)]/10">
+                                {confirmedCount}/{match.maxPlayers} Confirmados
+                            </span>
+                            <button className="border border-white/20 text-white text-[9px] font-black tracking-widest uppercase px-4 py-1.5 rounded-md hover:bg-white/10 transition-colors bg-black/40">
+                                Detalhes
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                {/* Confirmados */}
+                {participantsArray.filter(p => p.status === 'confirmed').length > 0 && (
+                    <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <div className="w-[3px] h-4 bg-[var(--primary)]"></div>
+                                <h3 className="text-[11px] font-black tracking-widest text-[var(--primary)] uppercase">
+                                    Confirmados ({participantsArray.filter(p => p.status === 'confirmed').length})
+                                </h3>
+                            </div>
+                            <div className="flex gap-4 text-[8px] font-black text-white/40 uppercase tracking-widest pr-3">
+                                <span>Comprovante</span>
+                                <span>Pago</span>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col border border-white/5 rounded-xl overflow-hidden bg-[#0A0D14]">
+                            {participantsArray.filter(p => p.status === 'confirmed').map((p, i, arr) => {
+                                const pProfile = participantProfiles[p.uid];
+                                const displayName = p.uid === user?.uid ? (profile?.displayName ?? 'Você') : (pProfile?.displayName ?? 'Jogador');
+
+                                return (
+                                    <div key={p.uid} className={`flex items-center justify-between p-3.5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} hover:bg-white/5 transition-colors`}>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-4 h-4 rounded-full bg-[var(--primary)] text-black flex items-center justify-center text-[10px] shadow-[0_0_8px_rgba(0,255,100,0.4)]">✓</div>
+                                            <span className="text-[13px] font-bold text-white">{displayName}</span>
+                                        </div>
+                                        <div className="flex items-center gap-7 pr-3">
+                                            <span className="text-[var(--primary)] text-base opacity-80 cursor-pointer hover:opacity-100 transition-opacity">🧾</span>
+                                            <div
+                                                onClick={() => handleTogglePayment(p.uid, p.paid)}
+                                                className={`w-[18px] h-[18px] rounded-[4px] border border-white/20 flex items-center justify-center cursor-pointer transition-all ${p.paid ? 'bg-[var(--primary)] border-[var(--primary)]' : 'bg-transparent hover:border-white/40'} ${isOwner ? '' : 'pointer-events-none opacity-80'}`}
+                                            >
+                                                {p.paid && <span className="text-black text-[12px] font-black leading-none pt-0.5">✓</span>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Aguardando Resposta */}
+                {participantsArray.filter(p => p.status === 'pending').length > 0 && (
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-[3px] h-4 bg-[#8A93A6]"></div>
+                            <h3 className="text-[11px] font-black tracking-widest text-[#8A93A6] uppercase">
+                                Aguardando Resposta ({participantsArray.filter(p => p.status === 'pending').length})
+                            </h3>
+                        </div>
+
+                        <div className="flex flex-col border border-white/5 rounded-xl overflow-hidden bg-[#0A0D14]/50">
+                            {participantsArray.filter(p => p.status === 'pending').map((p, i, arr) => {
+                                const pProfile = participantProfiles[p.uid];
+                                const displayName = pProfile?.displayName ?? 'Jogador';
+
+                                return (
+                                    <div key={p.uid} className={`flex items-center justify-between p-3.5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} opacity-60`}>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-4 h-4 rounded-full bg-[#8A93A6]/20 text-[#8A93A6] flex items-center justify-center text-[10px]">🕒</div>
+                                            <span className="text-[13px] font-bold text-white">{displayName}</span>
+                                        </div>
+                                        <div className="flex items-center gap-7 pr-3">
+                                            <span className="text-[#8A93A6] text-base opacity-40">🧾</span>
+                                            <div className="w-[18px] h-[18px] rounded-[4px] border border-white/10 bg-transparent opacity-40"></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Recusados */}
+                {participantsArray.filter(p => p.status === 'declined').length > 0 && (
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-[3px] h-4 bg-[#EF4444]"></div>
+                            <h3 className="text-[11px] font-black tracking-widest text-[#EF4444] uppercase">
+                                Recusados ({participantsArray.filter(p => p.status === 'declined').length})
+                            </h3>
+                        </div>
+
+                        <div className="flex flex-col border border-white/5 rounded-xl overflow-hidden bg-[#0A0D14]/30">
+                            {participantsArray.filter(p => p.status === 'declined').map((p, i, arr) => {
+                                const pProfile = participantProfiles[p.uid];
+                                const displayName = pProfile?.displayName ?? 'Jogador';
+
+                                return (
+                                    <div key={p.uid} className={`flex items-center justify-between p-3.5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} opacity-50 grayscale`}>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-4 h-4 rounded-full bg-[#EF4444] text-white flex items-center justify-center text-[8px] font-black">X</div>
+                                            <span className="text-[13px] font-bold text-white line-through">{displayName}</span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
 
                 {/* Floating Action Button Bar */}
                 {!isPast && (
@@ -327,7 +326,7 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                             <button
                                 onClick={handleToggleParticipation}
                                 disabled={actionLoading}
-                                className="w-full bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 text-white rounded-2xl py-4 font-bold flex items-center justify-center gap-3 transition-all active:scale-95"
+                                className="w-full bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 text-white rounded-[1rem] py-4 font-bold flex items-center justify-center gap-3 transition-all active:scale-95"
                             >
                                 {actionLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : (
                                     <>
@@ -337,21 +336,16 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                                 )}
                             </button>
                         ) : isFull ? (
-                            <div className="w-full bg-[var(--danger-muted)] border border-[var(--danger)]/30 rounded-2xl py-4 text-center">
+                            <div className="w-full bg-[var(--danger-muted)] border border-[var(--danger)]/30 rounded-[1rem] py-4 text-center">
                                 <p className="font-bold text-[var(--danger)]">⛔ Partida esgotada</p>
                             </div>
                         ) : (
                             <button
                                 onClick={handleToggleParticipation}
                                 disabled={actionLoading}
-                                className="w-full bg-[var(--primary)] text-[var(--primary-text)] rounded-2xl py-4 font-black text-lg flex items-center justify-center gap-3 shadow-[0_10px_40px_rgba(0,208,156,0.4)] transition-all hover:scale-[1.02] active:scale-95"
+                                className="w-full bg-[var(--primary)] text-black rounded-[1rem] py-4 font-black transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(0,255,100,0.3)]"
                             >
-                                {actionLoading ? <div className="w-5 h-5 border-2 border-[var(--primary-text)]/30 border-t-[var(--primary-text)] rounded-full animate-spin"></div> : (
-                                    <>
-                                        <span>⚽</span>
-                                        <span>EU VOU NESTA!</span>
-                                    </>
-                                )}
+                                {actionLoading ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></div> : 'EU VOU NESTA!'}
                             </button>
                         )}
                     </div>

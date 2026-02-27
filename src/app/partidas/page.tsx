@@ -30,7 +30,7 @@ export default function PartidasPage() {
     useEffect(() => { loadMatches(); }, [user]); // eslint-disable-line
 
     const now = new Date();
-    const upcoming = matches.filter((m) => m.status === 'upcoming' && m.date >= now);
+    const upcoming = matches.filter((m) => m.status === 'upcoming' && m.date >= now).sort((a, b) => a.date.getTime() - b.date.getTime());
     const past = matches.filter((m) => m.status === 'completed' || m.date < now);
 
     const formatDate = (d: Date) =>
