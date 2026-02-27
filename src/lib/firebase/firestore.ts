@@ -16,7 +16,9 @@ import {
     increment,
     writeBatch,
 } from 'firebase/firestore';
-import { db } from './config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
+import { db, storage } from './config';
 import type { UserProfile, Match, Payment, CreditTransaction } from '@/types';
 
 // =================== USERS ===================
@@ -78,7 +80,7 @@ export async function createMatch(
 ): Promise<string> {
     const ref = await addDoc(collection(db, 'matches'), {
         ...data,
-        participants: [],
+        participants: {},
         status: 'upcoming',
         createdAt: serverTimestamp(),
     });
@@ -91,14 +93,62 @@ export async function updateMatch(matchId: string, data: Partial<Match>): Promis
 
 export async function confirmParticipation(matchId: string, userId: string): Promise<void> {
     await updateDoc(doc(db, 'matches', matchId), {
-        participants: arrayUnion(userId),
+        [`participants.${userId}`]: { status: 'confirmed', paid: false },
+    });
+}
+
+export async function declineParticipation(matchId: string, userId: string): Promise<void> {
+    await updateDoc(doc(db, 'matches', matchId), {
+        [`participants.${userId}`]: { status: 'declined', paid: false },
     });
 }
 
 export async function cancelParticipation(matchId: string, userId: string): Promise<void> {
-    await updateDoc(doc(db, 'matches', matchId), {
-        participants: arrayRemove(userId),
+    const matchRef = doc(db, 'matches', matchId);
+
+    // To remove a key from a map in Firestore, you use deleteField()
+    // but importing deleteField is needed. We'll do it via updateDoc.
+    const { deleteField } = await import('firebase/firestore');
+    await updateDoc(matchRef, {
+        [`participants.${userId}`]: deleteField(),
     });
+}
+
+export async function togglePaymentStatus(
+    matchId: string,
+    userId: string,
+    currentPaidStatus: boolean,
+    amountToDeduct: number
+): Promise<void> {
+    const batch = writeBatch(db);
+
+    // 1. Update the participant's paid status in the match
+    batch.update(doc(db, 'matches', matchId), {
+        [`participants.${userId}.paid`]: !currentPaidStatus,
+    });
+
+    // 2. Adjust user credits based on the action
+    // If currently NOT paid (!currentPaidStatus === true), we are deducting credits to pay.
+    // If currently paid (!currentPaidStatus === false), we are refunding credits.
+    const creditModifier = !currentPaidStatus ? -amountToDeduct : amountToDeduct;
+
+    batch.update(doc(db, 'users', userId), {
+        credits: increment(creditModifier)
+    });
+
+    // 3. Log the transaction
+    const txRef = doc(collection(db, 'credits', userId, 'transactions'));
+    batch.set(txRef, {
+        userId,
+        type: !currentPaidStatus ? 'debit' : 'credit',
+        amount: amountToDeduct,
+        ref: matchId,
+        refType: 'match',
+        description: !currentPaidStatus ? `Pagamento de partida via admin` : `Reembolso de partida cancelada`,
+        date: serverTimestamp(),
+    });
+
+    await batch.commit();
 }
 
 // =================== PAYMENTS ===================
@@ -226,4 +276,31 @@ export async function deductCreditForMatch(
     });
     batch.update(doc(db, 'users', userId), { credits: increment(-amount) });
     await batch.commit();
+}
+
+// =================== STORAGE ===================
+
+export async function uploadProfilePhoto(userId: string, file: File): Promise<string> {
+    const fileExtension = file.name.split('.').pop();
+    // Assuming you have 'storage' exported from config.ts
+    const { storage } = await import('./config');
+    const storageRef = ref(storage, `profiles/${userId}.${fileExtension}`);
+
+    // Upload file
+    await uploadBytes(storageRef, file);
+
+    // Get URL
+    const photoURL = await getDownloadURL(storageRef);
+
+    // Update user doc
+    await updateUserProfile(userId, { photoURL });
+
+    // Update auth profile
+    const auth = getAuth();
+    if (auth.currentUser) {
+        const { updateProfile } = await import('firebase/auth');
+        await updateProfile(auth.currentUser, { photoURL });
+    }
+
+    return photoURL;
 }

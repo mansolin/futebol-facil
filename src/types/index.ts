@@ -9,6 +9,11 @@ export interface UserProfile {
     role: 'player' | 'admin';
 }
 
+export interface MatchParticipant {
+    status: 'confirmed' | 'declined';
+    paid: boolean;
+}
+
 export interface Match {
     id: string;
     title: string;
@@ -19,7 +24,7 @@ export interface Match {
     createdBy: string;
     isRecurring: boolean;
     recurringDay?: number; // 0=Sunday, 6=Saturday
-    participants: string[];
+    participants: Record<string, MatchParticipant>;
     status: 'upcoming' | 'completed' | 'cancelled';
     description?: string;
 }

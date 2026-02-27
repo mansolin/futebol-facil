@@ -1,0 +1,35 @@
+
+> futebol-facil@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 47s
+  Running TypeScript ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/12) ...
+  Generating static pages using 4 workers (3/12) 
+  Generating static pages using 4 workers (6/12) 
+  Generating static pages using 4 workers (9/12) 
+✓ Generating static pages using 4 workers (12/12) in 2.6s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin
+├ ƒ /api/vision
+├ ○ /cadastro
+├ ○ /dashboard
+├ ○ /login
+├ ○ /pagamentos
+├ ○ /partidas
+├ ƒ /partidas/[id]
+└ ○ /perfil
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

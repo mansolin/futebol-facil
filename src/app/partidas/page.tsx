@@ -100,26 +100,38 @@ function MatchCard({ match, userId, formatDate, past }: {
     match: Match; userId: string; formatDate: (d: Date) => string; past?: boolean;
 }) {
     const router = useRouter();
-    const isParticipating = match.participants.includes(userId);
+    const isParticipating = match.participants[userId]?.status === 'confirmed';
 
     return (
         <div
-            className="card fade-in cursor-pointer"
+            className="card fade-in cursor-pointer relative overflow-hidden group hover:-translate-y-1 transition-transform"
             onClick={() => router.push(`/partidas/${match.id}`)}
-            style={{ opacity: past ? 0.7 : 1 }}
+            style={{ opacity: past ? 0.6 : 1 }}
         >
+            {/* Add subtle side border accent to cards */}
+            {!past && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--primary)] to-transparent opacity-50"></div>}
+
             <div className="flex items-start justify-between">
-                <div>
-                    <h4 className="font-bold" style={{ color: 'var(--text)' }}>⚽ {match.title}</h4>
-                    <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>📅 {formatDate(match.date)}</p>
-                    <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>📍 {match.location}</p>
-                    <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                        👥 {match.participants.length}/{match.maxPlayers} · 💰 R$ {match.pricePerPlayer.toFixed(2)}
-                        {match.isRecurring && ' · 🔁 Recorrente'}
+                <div className="flex-1 pl-2">
+                    <h4 className="font-bold text-lg" style={{ color: 'var(--text)' }}>
+                        {match.title}
+                    </h4>
+                    <p className="text-sm mt-1.5 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
+                        <span className="opacity-70">📅</span> {formatDate(match.date)}
                     </p>
+                    <p className="text-sm mt-1 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
+                        <span className="opacity-70">📍</span> {match.location}
+                    </p>
+                    <div className="text-sm mt-1 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
+                        <span className="opacity-70">👥</span>
+                        <span>{Object.keys(match.participants).length}/{match.maxPlayers}</span>
+                        <span className="mx-1 opacity-40">•</span>
+                        <span className="font-bold" style={{ color: 'var(--primary)' }}>R$ {match.pricePerPlayer.toFixed(2)}</span>
+                        {match.isRecurring && <span className="ml-1 text-xs opacity-70 border rounded px-1 tracking-wider border-[var(--border)]">🔁 Recorrente</span>}
+                    </div>
                 </div>
-                <span className={`badge ${past ? 'badge-blue' : isParticipating ? 'badge-green' : 'badge-yellow'}`}>
-                    {past ? '✓ Concluída' : isParticipating ? '✅ Você' : '⏳ Aberto'}
+                <span className={`badge ${past ? 'badge-blue' : isParticipating ? 'badge-green' : 'badge-yellow'} shadow-sm`}>
+                    {past ? '✓ Concluída' : isParticipating ? 'Confirmado' : 'Aberto'}
                 </span>
             </div>
         </div>

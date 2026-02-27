@@ -1,0 +1,39 @@
+﻿
+> futebol-facil@0.1.0 lint
+> eslint
+
+
+C:\Projetos Antigravity\futebol-facil\next.config.ts
+  2:8  warning  'path' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projetos Antigravity\futebol-facil\src\app\admin\page.tsx
+   49:11  warning  'playersWithBalance' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  223:21  warning  'validatePayment' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+C:\Projetos Antigravity\futebol-facil\src\app\pagamentos\page.tsx
+   43:11  warning  'totalCredits' is assigned a value but never used                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  224:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projetos Antigravity\futebol-facil\src\context\ThemeContext.tsx
+  24:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Projetos Antigravity\futebol-facil\src\context\ThemeContext.tsx:24:9
+  22 |         const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  23 |         const initial = stored ?? (systemDark ? 'dark' : 'light');
+> 24 |         setTheme(initial);
+     |         ^^^^^^^^ Avoid calling setState() directly within an effect
+  25 |         document.documentElement.classList.toggle('dark', initial === 'dark');
+  26 |     }, []);
+  27 |  react-hooks/set-state-in-effect
+
+C:\Projetos Antigravity\futebol-facil\src\lib\firebase\firestore.ts
+  8:5  warning  'deleteDoc' is defined but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 7 problems (1 error, 6 warnings)
+
