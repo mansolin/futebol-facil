@@ -71,14 +71,16 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
     const formatDate = (d: Date) =>
         d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-    async function handleToggleParticipation() {
+    async function handleToggleParticipation(status: 'confirmed' | 'declined' | 'removed') {
         if (!user) return;
         setActionLoading(true);
         try {
-            if (isParticipating) {
-                await cancelParticipation(match!.id, user.uid);
-            } else {
+            if (status === 'confirmed') {
                 await confirmParticipation(match!.id, user.uid);
+            } else if (status === 'declined') {
+                await declineParticipation(match!.id, user.uid);
+            } else {
+                await cancelParticipation(match!.id, user.uid);
             }
             // re-fetch match to update UI
             const m = await getMatchById(params.id);
@@ -101,77 +103,6 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
             alert("Erro ao alterar status de pagamento.");
         }
     }
-
-    const renderParticipantList = (statusFilter: 'confirmed' | 'declined' | 'pending') => {
-        let title = '';
-        let list = participantsArray.filter(p => p.status === statusFilter);
-
-        // Hacky pending logic: users who are not confirmed and not declined.
-        // In a real app, you might have invited users stored somewhere else or just default all app users.
-        // For simplicity from previous versions, we will only show those explicitly confirming or declining.
-        // We will adapt pending to just be empty for now since we don't have an invite list yet.
-
-        if (statusFilter === 'confirmed') title = '✅ Confirmados';
-        if (statusFilter === 'declined') title = '❌ Recusados';
-        if (statusFilter === 'pending') title = '⏳ Pendentes';
-
-        if (list.length === 0 && statusFilter !== 'confirmed') return null;
-
-        return (
-            <div className="mb-4">
-                <h4 className="font-bold text-sm mb-2" style={{ color: 'var(--text-muted)' }}>{title} ({list.length})</h4>
-                {list.length === 0 ? (
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nenhum jogador.</p>
-                ) : (
-                    <div className="flex flex-col gap-2">
-                        {list.map((p) => {
-                            const pProfile = participantProfiles[p.uid];
-                            const displayName = p.uid === user?.uid ? (profile?.displayName ?? 'Você') : (pProfile?.displayName ?? 'Jogador');
-                            const initial = displayName.charAt(0).toUpperCase();
-
-                            return (
-                                <div key={p.uid} className="flex items-center justify-between p-2 rounded-lg" style={{ background: 'var(--card-bg)' }}>
-                                    <div className="flex items-center gap-3">
-                                        <div
-                                            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm"
-                                            style={{ background: 'var(--primary)', color: 'var(--primary-text)' }}
-                                        >
-                                            {pProfile?.photoURL ? (
-                                                <img src={pProfile.photoURL} alt={displayName} className="w-10 h-10 rounded-full object-cover" />
-                                            ) : initial}
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-bold" style={{ color: 'var(--text)' }}>
-                                                {displayName}
-                                                {p.uid === user?.uid && <span className="badge badge-green text-[10px] ml-2 px-1">Você</span>}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        {statusFilter === 'confirmed' && (
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={p.paid}
-                                                    onChange={() => handleTogglePayment(p.uid, p.paid)}
-                                                    disabled={!isOwner}
-                                                    className="w-4 h-4 rounded"
-                                                    style={{ accentColor: 'var(--primary)', pointerEvents: isOwner ? 'auto' : 'none', opacity: isOwner ? 1 : 0.6 }}
-                                                />
-                                                <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-                                                    {p.paid ? 'Pago' : 'Pagar'}
-                                                </span>
-                                            </label>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-        );
-    };
 
     return (
         <div style={{ background: 'var(--bg)', minHeight: '100dvh' }}>
@@ -259,38 +190,6 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                     </div>
                 )}
 
-                {/* Aguardando Resposta */}
-                {participantsArray.filter(p => p.status === 'pending').length > 0 && (
-                    <div className="mb-6">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-[3px] h-4 bg-[#8A93A6]"></div>
-                            <h3 className="text-[11px] font-black tracking-widest text-[#8A93A6] uppercase">
-                                Aguardando Resposta ({participantsArray.filter(p => p.status === 'pending').length})
-                            </h3>
-                        </div>
-
-                        <div className="flex flex-col border border-white/5 rounded-xl overflow-hidden bg-[#0A0D14]/50">
-                            {participantsArray.filter(p => p.status === 'pending').map((p, i, arr) => {
-                                const pProfile = participantProfiles[p.uid];
-                                const displayName = pProfile?.displayName ?? 'Jogador';
-
-                                return (
-                                    <div key={p.uid} className={`flex items-center justify-between p-3.5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} opacity-60`}>
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-4 h-4 rounded-full bg-[#8A93A6]/20 text-[#8A93A6] flex items-center justify-center text-[10px]">🕒</div>
-                                            <span className="text-[13px] font-bold text-white">{displayName}</span>
-                                        </div>
-                                        <div className="flex items-center gap-7 pr-3">
-                                            <span className="text-[#8A93A6] text-base opacity-40">🧾</span>
-                                            <div className="w-[18px] h-[18px] rounded-[4px] border border-white/10 bg-transparent opacity-40"></div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
-
                 {/* Recusados */}
                 {participantsArray.filter(p => p.status === 'declined').length > 0 && (
                     <div className="mb-6">
@@ -324,7 +223,7 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                     <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-[440px] z-30">
                         {isParticipating ? (
                             <button
-                                onClick={handleToggleParticipation}
+                                onClick={() => handleToggleParticipation('removed')}
                                 disabled={actionLoading}
                                 className="w-full bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 text-white rounded-[1rem] py-4 font-bold flex items-center justify-center gap-3 transition-all active:scale-95"
                             >
@@ -340,13 +239,22 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                                 <p className="font-bold text-[var(--danger)]">⛔ Partida esgotada</p>
                             </div>
                         ) : (
-                            <button
-                                onClick={handleToggleParticipation}
-                                disabled={actionLoading}
-                                className="w-full bg-[var(--primary)] text-black rounded-[1rem] py-4 font-black transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(0,255,100,0.3)]"
-                            >
-                                {actionLoading ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></div> : 'EU VOU NESTA!'}
-                            </button>
+                            <div className="flex gap-2 w-full">
+                                <button
+                                    onClick={() => handleToggleParticipation('declined')}
+                                    disabled={actionLoading}
+                                    className="flex-1 bg-white/5 border border-white/10 text-white rounded-[1rem] py-4 font-bold transition-all active:scale-95 flex items-center justify-center"
+                                >
+                                    {actionLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : 'NÃO VOU'}
+                                </button>
+                                <button
+                                    onClick={() => handleToggleParticipation('confirmed')}
+                                    disabled={actionLoading}
+                                    className="flex-[2] bg-[var(--primary)] text-black rounded-[1rem] py-4 font-black transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(0,255,100,0.3)]"
+                                >
+                                    {actionLoading ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></div> : 'EU VOU NESTA!'}
+                                </button>
+                            </div>
                         )}
                     </div>
                 )}

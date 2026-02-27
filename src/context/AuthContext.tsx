@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config';
-import { getUserProfile } from '@/lib/firebase/firestore';
+import { doc, onSnapshot, Timestamp } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile } from '@/types';
 
 interface AuthContextValue {
@@ -26,21 +26,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        let profileUnsubscribe: () => void;
+
+        const authUnsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
             setUser(firebaseUser);
+            
+            if (profileUnsubscribe) {
+                profileUnsubscribe();
+            }
+
             if (firebaseUser) {
-                try {
-                    const userProfile = await getUserProfile(firebaseUser.uid);
-                    setProfile(userProfile);
-                } catch {
+                const profileRef = doc(db, 'users', firebaseUser.uid);
+                profileUnsubscribe = onSnapshot(profileRef, (snap) => {
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        setProfile({
+                            uid: snap.id,
+                            ...data,
+                            createdAt: (data.createdAt as Timestamp)?.toDate() ?? new Date(),
+                        } as UserProfile);
+                    } else {
+                        setProfile(null);
+                    }
+                    setLoading(false);
+                }, (error) => {
+                    console.error("Error listening to profile changes:", error);
                     setProfile(null);
-                }
+                    setLoading(false);
+                });
             } else {
                 setProfile(null);
+                setLoading(false);
             }
-            setLoading(false);
         });
-        return unsubscribe;
+
+        return () => {
+            authUnsubscribe();
+            if (profileUnsubscribe) {
+                profileUnsubscribe();
+            }
+        };
     }, []);
 
     const isAdmin = profile?.role === 'admin';

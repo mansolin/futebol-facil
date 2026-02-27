@@ -63,12 +63,12 @@ export default function DashboardPage() {
                             <h2 className="text-xl font-black text-white leading-none">{profile.displayName?.split(' ')[0]} {profile.displayName?.split(' ')[1] || ''}</h2>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 cursor-pointer group active:scale-95 transition-all">
+                    <Link href="/partidas" className="flex items-center gap-2 cursor-pointer group active:scale-95 transition-all">
                         <span className="text-[10px] font-black text-[var(--primary)] uppercase tracking-wider group-hover:opacity-80">Novo Avulso</span>
                         <div className="w-6 h-6 rounded-full bg-[var(--primary)] text-black flex items-center justify-center font-black text-sm shadow-[0_0_10px_rgba(0,255,100,0.3)]">
                             +
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Section Header */}
@@ -76,7 +76,7 @@ export default function DashboardPage() {
                     <h3 className="text-xl font-black italic tracking-wider text-white uppercase" style={{ transform: 'skewX(-5deg)' }}>
                         Meus Jogos
                     </h3>
-                    <Link href="/partidas/historico" className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest hover:opacity-80 transition-opacity flex items-center gap-1">
+                    <Link href="/partidas" className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest hover:opacity-80 transition-opacity flex items-center gap-1">
                         Ver Todos <span className="text-sm">→</span>
                     </Link>
                 </div>
@@ -123,7 +123,7 @@ export default function DashboardPage() {
                                             <p className="text-[7px] font-black text-white/40 uppercase tracking-widest mb-0.5">Data e Hora</p>
                                             <div className="flex items-center gap-1.5">
                                                 <span className="text-[10px] text-[var(--primary)] opacity-80">📅</span>
-                                                <span className="text-[11px] font-bold text-white tracking-wide">{formatDate(nextMatch.date).replace(/:00$/, '').split(' ').slice(1).join(' ').replace(',',' •')}</span>
+                                                <span className="text-[11px] font-bold text-white tracking-wide">{formatDate(nextMatch.date).replace(/:00$/, '').split(' ').slice(1).join(' ').replace(',', ' •')}</span>
                                             </div>
                                         </div>
                                         <div className="flex-1 bg-black/40 backdrop-blur-md rounded-[0.8rem] p-2.5 border border-white/5">
@@ -159,12 +159,12 @@ export default function DashboardPage() {
                         <span className="text-[var(--primary)] text-base">✨</span>
                         <h3 className="text-[10px] font-black text-[var(--primary)] uppercase tracking-[0.15em]">Pagamento Inteligente</h3>
                     </div>
-                    
+
                     <p className="text-[10px] font-medium text-[#8A93A6] leading-relaxed mb-5 pr-4">
                         Nossa IA identifica o comprovante, confirma o destinatário e credita seu saldo instantaneamente.
                     </p>
 
-                    <button className="w-full bg-gradient-to-r from-[var(--primary)] to-[#25B5D6] text-black font-black text-[10px] uppercase tracking-widest py-3.5 px-4 rounded-[1rem] flex items-center justify-between transition-all active:scale-[0.98] shadow-[0_8px_20px_rgba(0,255,100,0.2)]">
+                    <Link href="/pagamentos" className="w-full bg-gradient-to-r from-[var(--primary)] to-[#25B5D6] text-black font-black text-[10px] uppercase tracking-widest py-3.5 px-4 rounded-[1rem] flex items-center justify-between transition-all active:scale-[0.98] shadow-[0_8px_20px_rgba(0,255,100,0.2)]">
                         <div className="flex items-center gap-2">
                             <span className="text-base">📷</span>
                             <span>Lançar Comprovante (IA)</span>
@@ -172,7 +172,7 @@ export default function DashboardPage() {
                         <div className="flex items-center opacity-60">
                             <span className="text-[10px] font-black tracking-tighter">♦_♦RK</span>
                         </div>
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Bottom 2 Cards Grid */}

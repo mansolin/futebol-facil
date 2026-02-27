@@ -37,10 +37,10 @@ export default function PartidasPage() {
         d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
     return (
-        <div style={{ background: 'var(--bg)', minHeight: '100dvh' }}>
+        <div style={{ background: '#0A0B10', minHeight: '100dvh' }}>
             <Header title="Partidas" />
-            <main className="page-container">
-                <div className="flex items-center justify-between mb-4">
+            <main className="page-container" style={{ paddingBottom: '100px', paddingTop: 'max(env(safe-area-inset-top), 20px)' }}>
+                <div className="flex items-center justify-between mb-6 mt-2 fade-in">
                     <h2 className="text-xl font-black" style={{ color: 'var(--text)' }}>Partidas</h2>
                     <button
                         onClick={() => setShowModal(true)}
@@ -59,9 +59,11 @@ export default function PartidasPage() {
                         <div key={i} className="card shimmer h-24 mb-3" />
                     ))
                 ) : upcoming.length === 0 ? (
-                    <div className="card text-center py-8 mb-4">
-                        <p className="text-3xl mb-2">🏟️</p>
-                        <p style={{ color: 'var(--text-muted)' }}>Nenhuma partida agendada</p>
+                    <div className="card text-center py-10 mb-6 fade-in border-dashed border-2 rounded-[1.5rem]" style={{ borderColor: 'var(--border)' }}>
+                        <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center opacity-30" style={{ background: 'var(--bg-elevated)' }}>
+                            <span className="text-3xl">🏟️</span>
+                        </div>
+                        <p className="font-medium" style={{ color: 'var(--text-muted)' }}>Nenhuma partida agendada</p>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3 mb-6">
@@ -104,35 +106,37 @@ function MatchCard({ match, userId, formatDate, past }: {
 
     return (
         <div
-            className="card fade-in cursor-pointer relative overflow-hidden group hover:-translate-y-1 transition-transform"
+            className="bg-[#0A0D14] border border-[#1A1F2E] rounded-[1rem] p-4 flex flex-col relative overflow-hidden fade-in active:scale-95 transition-transform mb-3"
             onClick={() => router.push(`/partidas/${match.id}`)}
             style={{ opacity: past ? 0.6 : 1 }}
         >
             {/* Add subtle side border accent to cards */}
-            {!past && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--primary)] to-transparent opacity-50"></div>}
+            {!past && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--primary)] to-transparent opacity-80"></div>}
 
             <div className="flex items-start justify-between">
-                <div className="flex-1 pl-2">
-                    <h4 className="font-bold text-lg" style={{ color: 'var(--text)' }}>
+                <div className="pl-2">
+                    <h4 className="font-bold text-white uppercase tracking-tight text-lg mb-1 leading-tight">
                         {match.title}
                     </h4>
-                    <p className="text-sm mt-1.5 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                        <span className="opacity-70">📅</span> {formatDate(match.date)}
+                    <p className="text-[11px] mt-1.5 text-white/60 font-medium flex items-center gap-1.5">
+                        <span className="opacity-70 text-[var(--primary)]">📅</span> {formatDate(match.date)}
                     </p>
-                    <p className="text-sm mt-1 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                        <span className="opacity-70">📍</span> {match.location}
+                    <p className="text-[11px] mt-1 text-white/60 font-medium flex items-center gap-1.5">
+                        <span className="opacity-70 text-[var(--primary)]">📍</span> {match.location}
                     </p>
-                    <div className="text-sm mt-1 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                        <span className="opacity-70">👥</span>
-                        <span>{Object.keys(match.participants).length}/{match.maxPlayers}</span>
+                    <div className="text-[11px] mt-2 font-medium flex items-center gap-1.5 text-white/60">
+                        <span className="opacity-70 text-[var(--primary)]">👥</span>
+                        <span>{Object.keys(match.participants).length}/{match.maxPlayers} confirmados</span>
                         <span className="mx-1 opacity-40">•</span>
-                        <span className="font-bold" style={{ color: 'var(--primary)' }}>R$ {match.pricePerPlayer.toFixed(2)}</span>
-                        {match.isRecurring && <span className="ml-1 text-xs opacity-70 border rounded px-1 tracking-wider border-[var(--border)]">🔁 Recorrente</span>}
+                        <span className="font-black text-[var(--primary)] text-sm">R$ {match.pricePerPlayer.toFixed(2)}</span>
                     </div>
                 </div>
-                <span className={`badge ${past ? 'badge-blue' : isParticipating ? 'badge-green' : 'badge-yellow'} shadow-sm`}>
-                    {past ? '✓ Concluída' : isParticipating ? 'Confirmado' : 'Aberto'}
-                </span>
+                <div className="flex flex-col items-end gap-1.5 mt-1">
+                    <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${past ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' : isParticipating ? 'bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20' : 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'}`}>
+                        {past ? '✓ Concluída' : isParticipating ? 'Confirmado' : 'Aberto'}
+                    </span>
+                    {match.isRecurring && <span className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-white/10 text-white/40">🔁 Recorrente</span>}
+                </div>
             </div>
         </div>
     );

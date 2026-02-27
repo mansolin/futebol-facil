@@ -49,78 +49,101 @@ export default function PagamentosPage() {
         .reduce((sum, p) => sum + p.amount, 0);
 
     return (
-        <div style={{ background: 'var(--bg)', minHeight: '100dvh' }}>
+        <div style={{ background: '#0A0B10', minHeight: '100dvh' }}>
             <Header title="Pagamentos" />
-            <main className="page-container">
+            <main className="page-container" style={{ paddingBottom: '100px', paddingTop: 'max(env(safe-area-inset-top), 20px)' }}>
                 {/* Summary cards */}
-                <div className="grid grid-cols-2 gap-3 mb-5">
-                    <div className="card text-center fade-in">
-                        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Créditos</p>
-                        <p className="text-2xl font-black mt-1" style={{ color: 'var(--primary)' }}>
+                <div className="grid grid-cols-2 gap-3 mb-6 mt-2">
+                    <div className="bg-[#0F141A] border border-[#102233] rounded-[1.5rem] p-4 text-center fade-in relative overflow-hidden shadow-[0_5px_15px_rgba(59,130,246,0.1)]">
+                        <div className="absolute top-0 right-[-10%] w-20 h-20 bg-[#3B82F6] opacity-[0.05] rounded-full blur-xl pointer-events-none"></div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-[#3B82F6] mb-1">Meus Créditos</p>
+                        <p className="text-2xl font-black text-white">
                             R$ {(profile?.credits ?? 0).toFixed(2)}
                         </p>
                     </div>
-                    <div className="card text-center fade-in">
-                        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Pendente</p>
-                        <p className="text-2xl font-black mt-1" style={{ color: 'var(--warning)' }}>
+                    <div className="bg-[#1A140F] border border-[#332210] rounded-[1.5rem] p-4 text-center fade-in relative overflow-hidden shadow-[0_5px_15px_rgba(255,138,0,0.1)]">
+                        <div className="absolute top-0 right-[-10%] w-20 h-20 bg-[#FF8A00] opacity-[0.05] rounded-full blur-xl pointer-events-none"></div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-[#FF8A00] mb-1">Pendente</p>
+                        <p className="text-2xl font-black text-white">
                             R$ {pendingAmount.toFixed(2)}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold" style={{ color: 'var(--text)' }}>Meus Pagamentos</h3>
+                    <h3 className="text-lg font-black text-white">Meus Pagamentos</h3>
                     <button
                         onClick={() => setShowModal(true)}
-                        className="btn-primary"
-                        style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                        className="bg-white/10 text-white border border-white/20 rounded-full font-bold transition-all active:scale-95"
+                        style={{ width: 'auto', padding: '0.4rem 1rem', fontSize: '0.75rem' }}
                     >
                         + Adicionar
                     </button>
                 </div>
 
                 {paymentsLoading ? (
-                    Array.from({ length: 3 }).map((_, i) => <div key={i} className="card shimmer h-20 mb-3" />)
+                    Array.from({ length: 3 }).map((_, i) => <div key={i} className="card shimmer h-20 mb-3 rounded-[1.5rem]" />)
                 ) : payments.length === 0 ? (
-                    <div className="card text-center py-10 fade-in">
-                        <p className="text-3xl mb-2">💳</p>
-                        <p style={{ color: 'var(--text-muted)' }}>Nenhum pagamento registrado.</p>
+                    <div className="card text-center py-10 fade-in border-dashed border-2 rounded-[1.5rem]" style={{ borderColor: 'var(--border)' }}>
+                        <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center opacity-30" style={{ background: 'var(--bg-elevated)' }}>
+                            <p className="text-3xl">💳</p>
+                        </div>
+                        <p className="font-medium" style={{ color: 'var(--text-muted)' }}>Nenhum pagamento registrado.</p>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3">
                         {payments.map((p) => {
                             const info = statusInfo(p.status);
+
+                            // Determine accent color
+                            let borderColor = 'border-[#1A1F2E]';
+                            let accentClass = '';
+                            if (p.status === 'validated') {
+                                borderColor = 'border-[var(--primary)]/30';
+                                accentClass = 'bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20';
+                            } else if (p.status === 'pending') {
+                                borderColor = 'border-yellow-500/30';
+                                accentClass = 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+                            } else {
+                                borderColor = 'border-red-500/30';
+                                accentClass = 'bg-red-500/10 text-red-500 border-red-500/20';
+                            }
+
                             return (
-                                <div key={p.id} className="card fade-in">
-                                    <div className="flex items-center justify-between">
+                                <div key={p.id} className={`bg-[#0A0D14] border ${borderColor} rounded-[1rem] p-4 flex flex-col relative overflow-hidden fade-in`}>
+                                    <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="font-bold" style={{ color: 'var(--text)' }}>
+                                            <p className="font-black text-white text-lg leading-none mb-1">
                                                 R$ {p.amount.toFixed(2)}
                                             </p>
-                                            <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
-                                                {formatDate(p.createdAt)} · {p.description || 'Pagamento'}
+                                            <p className="text-[10px] text-white/50 mb-0.5">
+                                                <span className="opacity-70">📅</span> {formatDate(p.createdAt)}
+                                            </p>
+                                            <p className="text-[11px] font-bold text-white/70">
+                                                {p.description || 'Pagamento'}
                                             </p>
                                             {p.enteredByAdmin && (
-                                                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                                                    🛡️ Lançado pelo admin
+                                                <p className="text-[9px] mt-1 text-[var(--primary)] opacity-80 uppercase tracking-widest font-black flex items-center gap-1">
+                                                    <span>🛡️</span> Lançado pelo admin
                                                 </p>
                                             )}
                                         </div>
-                                        <span className={`badge ${info?.badge}`}>
-                                            {info?.emoji} {info?.label}
-                                        </span>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border ${accentClass}`}>
+                                                {info?.emoji} {info?.label}
+                                            </span>
+                                            {p.receiptUrl && (
+                                                <a
+                                                    href={p.receiptUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-[10px] uppercase font-black tracking-widest border border-white/20 text-white bg-white/5 px-2.5 py-1 rounded-md mt-1 hover:bg-white/10 transition-colors"
+                                                >
+                                                    Comprovante
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
-                                    {p.receiptUrl && (
-                                        <a
-                                            href={p.receiptUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-xs mt-2 inline-block font-medium"
-                                            style={{ color: 'var(--primary)' }}
-                                        >
-                                            📎 Ver comprovante
-                                        </a>
-                                    )}
                                 </div>
                             );
                         })}
