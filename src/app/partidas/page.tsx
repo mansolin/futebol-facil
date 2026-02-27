@@ -66,7 +66,7 @@ export default function PartidasPage() {
                 ) : (
                     <div className="flex flex-col gap-3 mb-6">
                         {upcoming.map((m) => (
-                            <MatchCard key={m.id} match={m} userId={user?.uid ?? ''} formatDate={formatDate} DAYS_PT={DAYS_PT} />
+                            <MatchCard key={m.id} match={m} userId={user?.uid ?? ''} formatDate={formatDate} />
                         ))}
                     </div>
                 )}
@@ -78,7 +78,7 @@ export default function PartidasPage() {
                         </h3>
                         <div className="flex flex-col gap-3">
                             {past.slice(0, 10).map((m) => (
-                                <MatchCard key={m.id} match={m} userId={user?.uid ?? ''} formatDate={formatDate} DAYS_PT={DAYS_PT} past />
+                                <MatchCard key={m.id} match={m} userId={user?.uid ?? ''} formatDate={formatDate} past />
                             ))}
                         </div>
                     </>

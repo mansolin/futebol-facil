@@ -38,7 +38,7 @@ export default function Header({ title }: { title?: string }) {
                         width={32}
                         height={32}
                         className="rounded-full ring-2"
-                        style={{ ringColor: 'var(--primary)' }}
+                        style={{ '--tw-ring-color': 'var(--primary)' } as React.CSSProperties}
                     />
                 )}
                 {!profile?.photoURL && profile && (

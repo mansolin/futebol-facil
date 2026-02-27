@@ -21,6 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const stored = localStorage.getItem('theme') as Theme | null;
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const initial = stored ?? (systemDark ? 'dark' : 'light');
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTheme(initial);
         document.documentElement.classList.toggle('dark', initial === 'dark');
     }, []);
