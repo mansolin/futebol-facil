@@ -53,6 +53,25 @@ export async function getAllUsers(): Promise<UserProfile[]> {
     });
 }
 
+export async function getUsersByIds(uids: string[]): Promise<UserProfile[]> {
+    if (!uids.length) return [];
+
+    // Firestore 'in' queries are limited to 30 items
+    // For this app, matches usually have 12-22 players, so one query is enough
+    const { documentId } = await import('firebase/firestore');
+    const q = query(collection(db, 'users'), where(documentId(), 'in', uids));
+    const snap = await getDocs(q);
+
+    return snap.docs.map((d) => {
+        const data = d.data();
+        return {
+            uid: d.id,
+            ...data,
+            createdAt: (data.createdAt as Timestamp)?.toDate() ?? new Date(),
+        } as UserProfile;
+    });
+}
+
 // =================== MATCHES ===================
 
 export async function getMatches(): Promise<Match[]> {

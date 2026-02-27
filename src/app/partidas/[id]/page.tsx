@@ -295,6 +295,7 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                             </div>
                         </div>
                     </div>
+                )}
             </main>
             <BottomNav />
         </div>
