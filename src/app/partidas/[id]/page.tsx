@@ -175,128 +175,189 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
 
     return (
         <div style={{ background: 'var(--bg)', minHeight: '100dvh' }}>
-            <Header title="Detalhes" />
-            <main className="page-container">
-                {/* Match hero */}
-                <div
-                    className="rounded-3xl p-8 mb-6 fade-in relative overflow-hidden"
-                    style={{
-                        background: 'linear-gradient(145deg, #1A1D27 0%, #15171E 100%)',
-                        border: '1px solid rgba(255, 255, 255, 0.05)',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-                    }}
-                >
-                    {/* Decorative Background Elements */}
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-[var(--primary)] opacity-[0.06] rounded-full blur-3xl transform translate-x-10 -translate-y-10 pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500 opacity-[0.04] rounded-full blur-2xl transform -translate-x-10 translate-y-10 pointer-events-none"></div>
+            <Header title="Detalhes do Jogo" />
+            <main className="page-container !pt-0">
+                {/* Hero Section with Image */}
+                <div className="relative h-64 -mx-5 mb-8">
+                    <div
+                        className="absolute inset-0 z-0 bg-cover bg-center"
+                        style={{
+                            backgroundImage: `url(${match.imageUrl || 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop'})`,
+                        }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg)] via-transparent to-transparent opacity-90"></div>
+                    </div>
 
-                    <h2 className="text-3xl font-black text-white drop-shadow-md tracking-tight mb-2">⚽ {match.title}</h2>
-                    <p className="font-semibold text-sm mb-6 flex items-center gap-2" style={{ color: 'var(--primary)' }}>
-                        <span className="w-2 h-2 rounded-full" style={{ background: 'var(--primary)' }}></span>
-                        {match.isRecurring ? 'Partida de rotina (Semanal)' : 'Partida avulsa'}
-                    </p>
+                    <div className="relative z-10 h-full flex flex-col justify-end px-5 pb-4">
+                        <div className="flex gap-2 mb-3">
+                            <span className="badge badge-green !bg-[var(--primary)] !text-[var(--primary-text)] uppercase text-[10px]">Próximo Jogo</span>
+                            <span className="badge bg-white/10 backdrop-blur-md text-white/80 uppercase text-[10px]">
+                                {match.isRecurring ? 'Semanal' : 'Evento Único'}
+                            </span>
+                        </div>
+                        <h2 className="text-4xl font-black text-white leading-tight uppercase tracking-tighter">
+                            {match.title}
+                        </h2>
+                    </div>
+                </div>
 
-                    <div className="grid grid-cols-2 gap-y-5 gap-x-4 text-white text-sm">
-                        <div className="flex flex-col">
-                            <span className="opacity-50 text-[10px] font-bold tracking-widest uppercase mb-1">Data & Hora</span>
-                            <span className="font-medium text-base">{formatDate(match.date)}</span>
+                {/* Info Grid - Modern Glassmorphism Cells */}
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Data</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-base">📅</span>
+                            <span className="text-sm font-bold">{formatDate(match.date).split(',')[0]}</span>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="opacity-50 text-[10px] font-bold tracking-widest uppercase mb-1">Local</span>
-                            <span className="font-medium text-base">{match.location}</span>
+                    </div>
+                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Horário</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-base">🕒</span>
+                            <span className="text-sm font-bold">{match.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="opacity-50 text-[10px] font-bold tracking-widest uppercase mb-1">Custo por Jogador</span>
-                            <span className="font-black text-lg" style={{ color: 'var(--primary)' }}>R$ {match.pricePerPlayer.toFixed(2)}</span>
+                    </div>
+                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Investimento</span>
+                        <div className="flex items-center gap-2 text-[var(--primary)]">
+                            <span className="text-base">💰</span>
+                            <span className="text-sm font-black">R$ {match.pricePerPlayer.toFixed(2)}</span>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="opacity-50 text-[10px] font-bold tracking-widest uppercase mb-1">Ocupação</span>
-                            <span className="font-medium text-base">{confirmedCount} <span className="opacity-50">/ {match.maxPlayers}</span></span>
+                    </div>
+                    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Vagas</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-base">👥</span>
+                            <span className="text-sm font-bold">{confirmedCount} / {match.maxPlayers}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Action button */}
+                {/* Location Card */}
+                <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 mb-8 flex items-center justify-between">
+                    <div>
+                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1 block">Onde vai ser</span>
+                        <p className="font-bold text-base">{match.location}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-xl">📍</div>
+                </div>
+
+                {/* Participant List Header */}
+                <div className="flex items-center justify-between mb-4 px-2">
+                    <h3 className="text-xl font-black uppercase tracking-tight">Escalação</h3>
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-[var(--text-muted)]">{confirmedCount} confirmados</span>
+                    </div>
+                </div>
+
+                {/* Styled Participant List */}
+                <div className="space-y-3 mb-24">
+                    {participantsArray.filter(p => p.status === 'confirmed').map((p) => {
+                        const pProfile = participantProfiles[p.uid];
+                        const displayName = p.uid === user?.uid ? (profile?.displayName ?? 'Você') : (pProfile?.displayName ?? 'Jogador');
+
+                        return (
+                            <div key={p.uid} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-3 flex items-center justify-between group transition-all hover:border-[var(--primary)]/30">
+                                <div className="flex items-center gap-3">
+                                    <div className="relative">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[var(--bg-elevated)] bg-[var(--bg-elevated)] flex items-center justify-center font-bold text-lg text-[var(--primary)]">
+                                            {pProfile?.photoURL ? (
+                                                <img src={pProfile.photoURL} alt={displayName} className="w-full h-full object-cover" />
+                                            ) : displayName.charAt(0).toUpperCase()}
+                                        </div>
+                                        {p.paid && (
+                                            <div className="absolute -bottom-1 -right-1 bg-[var(--primary)] text-[var(--primary-text)] w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow-sm border-2 border-[var(--bg-card)]">
+                                                ✓
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-sm">{displayName}</span>
+                                            {p.uid === user?.uid && (
+                                                <span className="text-[8px] bg-white/5 py-0.5 px-1.5 rounded-full text-[var(--text-muted)] font-bold uppercase">Você</span>
+                                            )}
+                                        </div>
+                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${p.paid ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
+                                            {p.paid ? 'Pagamento Confirmado' : 'Aguardando Pagamento'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {isOwner && (
+                                    <button
+                                        onClick={() => handleTogglePayment(p.uid, p.paid)}
+                                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${p.paid ? 'bg-[var(--success-muted)] text-[var(--success)] shadow-inner' : 'bg-white/5 text-[var(--text-muted)]'}`}
+                                    >
+                                        <span className="text-xl">💳</span>
+                                    </button>
+                                )}
+                            </div>
+                        );
+                    })}
+
+                    {/* Declined Section Header */}
+                    {participantsArray.some(p => p.status === 'declined') && (
+                        <>
+                            <div className="pt-6 mb-4 px-2">
+                                <h3 className="text-lg font-black text-[var(--text-muted)] uppercase tracking-tight">Não vai poder ir</h3>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {participantsArray.filter(p => p.status === 'declined').map((p) => {
+                                    const pProfile = participantProfiles[p.uid];
+                                    const displayName = pProfile?.displayName?.split(' ')[0] ?? 'Jogador';
+                                    return (
+                                        <div key={p.uid} className="bg-white/5 border border-[var(--border)] rounded-full px-3 py-1.5 flex items-center gap-2 grayscale blur-[0.5px]">
+                                            <div className="w-6 h-6 rounded-full overflow-hidden bg-[var(--bg-elevated)] text-[10px] flex items-center justify-center font-bold">
+                                                {pProfile?.photoURL ? <img src={pProfile.photoURL} alt={displayName} /> : displayName.charAt(0)}
+                                            </div>
+                                            <span className="text-xs font-medium text-[var(--text-muted)]">{displayName}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
+                </div>
+
+                {/* Floating Action Button Bar */}
                 {!isPast && (
-                    <div className="mb-6">
+                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-[440px] z-30">
                         {isParticipating ? (
                             <button
                                 onClick={handleToggleParticipation}
                                 disabled={actionLoading}
-                                className="btn-danger w-full py-4 text-lg"
+                                className="w-full bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 text-white rounded-2xl py-4 font-bold flex items-center justify-center gap-3 transition-all active:scale-95"
                             >
-                                {actionLoading ? 'Aguarde...' : '❌ Cancelar Presença'}
+                                {actionLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : (
+                                    <>
+                                        <span>❌</span>
+                                        <span>Cancelar minha presença</span>
+                                    </>
+                                )}
                             </button>
                         ) : isFull ? (
-                            <div className="card text-center py-5 border-dashed" style={{ borderColor: 'var(--danger-muted)', background: 'rgba(255, 79, 79, 0.05)' }}>
-                                <p className="font-bold text-lg" style={{ color: 'var(--danger)' }}>⛔ Partida lotada</p>
+                            <div className="w-full bg-[var(--danger-muted)] border border-[var(--danger)]/30 rounded-2xl py-4 text-center">
+                                <p className="font-bold text-[var(--danger)]">⛔ Partida esgotada</p>
                             </div>
                         ) : (
                             <button
                                 onClick={handleToggleParticipation}
                                 disabled={actionLoading}
-                                className="btn-primary w-full py-4 text-lg shadow-lg shadow-[var(--primary)]/20"
+                                className="w-full bg-[var(--primary)] text-[var(--primary-text)] rounded-2xl py-4 font-black text-lg flex items-center justify-center gap-3 shadow-[0_10px_40px_rgba(0,208,156,0.4)] transition-all hover:scale-[1.02] active:scale-95"
                             >
-                                {actionLoading ? 'Aguarde...' : '✅ Confirmar Presença'}
+                                {actionLoading ? <div className="w-5 h-5 border-2 border-[var(--primary-text)]/30 border-t-[var(--primary-text)] rounded-full animate-spin"></div> : (
+                                    <>
+                                        <span>⚽</span>
+                                        <span>EU VOU NESTA!</span>
+                                    </>
+                                )}
                             </button>
                         )}
                     </div>
                 )}
-
-                {/* Status badge */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                    <span className={`badge px-4 py-2 text-sm ${isParticipating ? 'badge-green' : 'badge-yellow'}`}>
-                        {isParticipating ? 'Confirmado para o jogo' : 'Pendente de Confirmação'}
-                    </span>
-                    {isPast && <span className="badge px-4 py-2 text-sm badge-blue">✓ Encerrada</span>}
-                    {isFull && !isPast && <span className="badge px-4 py-2 text-sm badge-red">⛔ Esgotada</span>}
-                    {isOwner && <span className="badge px-4 py-2 text-sm" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>🛡️ Administrador</span>}
-                </div>
-
-                {/* Participants */}
-                <div className="card mb-6 shadow-xl relative overflow-hidden">
-                    {/* Decorative top border */}
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-30"></div>
-
-                    <h3 className="font-black mb-6 text-xl tracking-tight" style={{ color: 'var(--text)' }}>
-                        👥 Participantes da Partida
-                    </h3>
-
-                    {renderParticipantList('confirmed')}
-                    {renderParticipantList('declined')}
-                </div>
-
-                {/* Financial info */}
-                {isOwner && (
-                    <div className="card border-[var(--primary)]/30 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary)] opacity-[0.05] rounded-full blur-3xl transform translate-x-10 -translate-y-10 pointer-events-none"></div>
-                        <h3 className="font-black mb-5 text-xl tracking-tight flex items-center gap-2" style={{ color: 'var(--text)' }}>
-                            <span>💰</span> Controle Financeiro
-                        </h3>
-
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center text-base p-3 rounded-xl bg-[var(--bg-elevated)]">
-                                <span className="font-medium" style={{ color: 'var(--text-muted)' }}>Valor por jogador</span>
-                                <span className="font-bold text-lg" style={{ color: 'var(--text)' }}>R$ {match.pricePerPlayer.toFixed(2)}</span>
-                            </div>
-
-                            <div className="flex justify-between items-center text-base p-3 rounded-xl bg-[var(--bg-elevated)]">
-                                <span className="font-medium" style={{ color: 'var(--text-muted)' }}>Arrecadação Esperada</span>
-                                <span className="font-bold text-lg" style={{ color: 'var(--text)' }}>
-                                    R$ {(confirmedCount * match.pricePerPlayer).toFixed(2)}
-                                </span>
-                            </div>
-
-                            <div className="flex justify-between items-center text-base p-4 rounded-xl mt-2 border border-[var(--success-muted)]" style={{ background: 'rgba(0, 208, 156, 0.05)' }}>
-                                <span className="font-bold text-[var(--success)] uppercase tracking-wide text-sm">Arrecadação Real (Paga)</span>
-                                <span className="font-black text-2xl" style={{ color: 'var(--success)' }}>
-                                    R$ {(participantsArray.filter(p => p.status === 'confirmed' && p.paid).length * match.pricePerPlayer).toFixed(2)}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </main>
+            <div className="h-20"></div> {/* Spacer for floating button */}
             <BottomNav />
         </div>
     );

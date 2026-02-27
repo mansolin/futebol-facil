@@ -27,6 +27,7 @@ export interface Match {
     participants: Record<string, MatchParticipant>;
     status: 'upcoming' | 'completed' | 'cancelled';
     description?: string;
+    imageUrl?: string;
 }
 
 export interface Payment {

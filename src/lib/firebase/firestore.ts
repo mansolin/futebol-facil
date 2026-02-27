@@ -87,6 +87,26 @@ export async function getMatches(): Promise<Match[]> {
     });
 }
 
+export async function getPastMatchesByUser(userId: string): Promise<Match[]> {
+    const q = query(
+        collection(db, 'matches'),
+        where('status', '==', 'completed'),
+        orderBy('date', 'desc')
+    );
+    const snap = await getDocs(q);
+    const matches = snap.docs.map((d) => {
+        const data = d.data();
+        return {
+            id: d.id,
+            ...data,
+            date: (data.date as Timestamp)?.toDate() ?? new Date(),
+        } as Match;
+    });
+
+    // Filter by participant in memory since Firestore doesn't support querying by map keys directly with '==' effectively for this structure
+    return matches.filter(m => m.participants[userId]?.status === 'confirmed');
+}
+
 export async function getMatchById(matchId: string): Promise<Match | null> {
     const snap = await getDoc(doc(db, 'matches', matchId));
     if (!snap.exists()) return null;
@@ -322,4 +342,16 @@ export async function uploadProfilePhoto(userId: string, file: File): Promise<st
     }
 
     return photoURL;
+}
+
+export async function uploadMatchPhoto(matchId: string, file: File): Promise<string> {
+    const fileExtension = file.name.split('.').pop();
+    const { storage } = await import('./config');
+    const storageRef = ref(storage, `matches/${matchId}.${fileExtension}`);
+
+    await uploadBytes(storageRef, file);
+    const imageUrl = await getDownloadURL(storageRef);
+
+    await updateMatch(matchId, { imageUrl });
+    return imageUrl;
 }

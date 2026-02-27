@@ -54,7 +54,112 @@ export default function DashboardPage() {
                     </h2>
                 </div>
 
-                {/* Credits card - Fintech Redesign */}
+                {/* Next match section header - Renamed to Meus Jogos */}
+                <div className="flex items-center justify-between mb-4 mt-2">
+                    <h3 className="text-lg font-black tracking-tight" style={{ color: 'var(--text)' }}>
+                        Meus Jogos
+                    </h3>
+                    <Link href="/partidas/historico" className="text-xs font-bold text-[var(--primary)] uppercase tracking-widest hover:opacity-80 transition-opacity">
+                        Ver todos →
+                    </Link>
+                </div>
+
+                {matchesLoading ? (
+                    <div className="card shimmer h-48 mb-6" />
+                ) : nextMatch ? (
+                    <div className="relative group fade-in mb-6">
+                        <Link href={`/partidas/${nextMatch.id}`} className="block">
+                            <div
+                                className="card h-52 flex flex-col justify-end p-6 relative overflow-hidden transition-transform active:scale-[0.98]"
+                                style={{
+                                    background: `linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%), url(${nextMatch.imageUrl || 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop'})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    border: '1px solid rgba(255,255,255,0.1)'
+                                }}
+                            >
+                                {/* Badges Row */}
+                                <div className="absolute top-4 left-4 flex gap-2">
+                                    <span className="badge badge-green !bg-[var(--primary)] !text-[var(--primary-text)] shadow-lg shadow-[var(--primary)]/20">
+                                        Próximo Jogo
+                                    </span>
+                                </div>
+
+                                <div className="absolute top-4 right-4">
+                                    <span className={`badge ${isParticipating ? 'badge-green' : 'badge-yellow'}`}>
+                                        <span className={`w-2 h-2 rounded-full transform scale-110 mr-1 ${isParticipating ? 'bg-[var(--success)]' : 'bg-[var(--warning)]'}`}></span>
+                                        {isParticipating ? 'Confirmado' : 'Pendente'}
+                                    </span>
+                                </div>
+
+                                {/* Content */}
+                                <div className="relative z-10">
+                                    <div className="flex gap-2 mb-2">
+                                        <span className="text-[10px] font-bold py-0.5 px-2 rounded bg-white/10 text-white/70 uppercase tracking-widest backdrop-blur-md">
+                                            {nextMatch.isRecurring ? 'Mensal' : 'Avulsa'}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-2xl font-black text-white leading-none tracking-tight mb-4 uppercase">
+                                        {nextMatch.title}
+                                    </h4>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-white/5 backdrop-blur-md rounded-xl p-2.5 border border-white/5">
+                                            <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-1">Data e Hora</p>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm">📅</span>
+                                                <span className="text-xs font-bold text-white">{formatDate(nextMatch.date).replace(/:00$/, '')}</span>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white/5 backdrop-blur-md rounded-xl p-2.5 border border-white/5">
+                                            <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-1">Local</p>
+                                            <div className="flex items-center gap-2 text-white">
+                                                <span className="text-sm">📍</span>
+                                                <span className="text-xs font-bold truncate">{nextMatch.location}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+
+                        {/* Change Photo Button - Admin Only */}
+                        {profile.role === 'admin' && (
+                            <label className="absolute bottom-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center cursor-pointer transition-all border border-white/10 group-hover:scale-110 z-20">
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file && nextMatch) {
+                                            try {
+                                                const { uploadMatchPhoto } = await import('@/lib/firebase/firestore');
+                                                await uploadMatchPhoto(nextMatch.id, file);
+                                                window.location.reload();
+                                            } catch (err) {
+                                                alert('Erro ao trocar foto.');
+                                            }
+                                        }
+                                    }}
+                                />
+                                <span className="text-lg">📷</span>
+                            </label>
+                        )}
+                    </div>
+                ) : (
+                    <div className="card mb-6 text-center py-10 fade-in border-dashed border-2" style={{ borderColor: 'var(--border)' }}>
+                        <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center opacity-30" style={{ background: 'var(--bg-elevated)' }}>
+                            <span className="text-2xl">🏟️</span>
+                        </div>
+                        <p className="font-medium" style={{ color: 'var(--text-muted)' }}>Nenhum jogo agendado.</p>
+                        <Link href="/partidas" className="text-sm font-bold mt-4 inline-block btn-secondary" style={{ width: 'auto' }}>
+                            Criar uma partida →
+                        </Link>
+                    </div>
+                )}
+
+                {/* Credits card - Fintech Redesign - Moved below games */}
                 <div
                     className="rounded-3xl p-6 mb-6 fade-in relative overflow-hidden"
                     style={{
@@ -90,59 +195,6 @@ export default function DashboardPage() {
                         </Link>
                     </div>
                 </div>
-
-                {/* Next match */}
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-black tracking-tight" style={{ color: 'var(--text)' }}>
-                        Próximo Jogo
-                    </h3>
-                </div>
-                {matchesLoading ? (
-                    <div className="card shimmer h-32" />
-                ) : nextMatch ? (
-                    <Link href={`/partidas/${nextMatch.id}`}>
-                        <div className="card mb-6 fade-in cursor-pointer relative overflow-hidden group">
-                            {/* Add subtle side border accent to cards */}
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--primary)] to-transparent opacity-50"></div>
-
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1 pl-2">
-                                    <h4 className="font-bold text-lg" style={{ color: 'var(--text)' }}>
-                                        {nextMatch.title}
-                                    </h4>
-                                    <p className="text-sm mt-1.5 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                                        <span className="opacity-70">📅</span> {formatDate(nextMatch.date)}
-                                    </p>
-                                    <p className="text-sm mt-1 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                                        <span className="opacity-70">📍</span> {nextMatch.location}
-                                    </p>
-                                    <p className="text-sm mt-1 font-medium flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                                        <span className="opacity-70">👥</span> {Object.keys(nextMatch.participants).length}/{nextMatch.maxPlayers} jogadores
-                                    </p>
-                                </div>
-                                <span className={`badge ${isParticipating ? 'badge-green' : 'badge-yellow'} shadow-sm`}>
-                                    {isParticipating ? 'Confirmado' : 'Pendente'}
-                                </span>
-                            </div>
-                            <div className="mt-4 pt-4 ml-2 flex items-center justify-between" style={{ borderTop: '1px solid var(--border)' }}>
-                                <p className="text-sm font-bold" style={{ color: 'var(--primary)' }}>
-                                    R$ {nextMatch.pricePerPlayer.toFixed(2)}/jogador
-                                </p>
-                                <span className="text-xs font-bold uppercase tracking-wider opacity-50 group-hover:opacity-100 transition-opacity">Detalhes →</span>
-                            </div>
-                        </div>
-                    </Link>
-                ) : (
-                    <div className="card mb-6 text-center py-10 fade-in border-dashed border-2" style={{ borderColor: 'var(--border)' }}>
-                        <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center opacity-30" style={{ background: 'var(--bg-elevated)' }}>
-                            <span className="text-2xl">🏟️</span>
-                        </div>
-                        <p className="font-medium" style={{ color: 'var(--text-muted)' }}>Nenhum jogo agendado.</p>
-                        <Link href="/partidas" className="text-sm font-bold mt-4 inline-block btn-secondary" style={{ width: 'auto' }}>
-                            Criar uma partida →
-                        </Link>
-                    </div>
-                )}
 
                 {/* My confirmed matches */}
                 {myMatches.length > 0 && (
