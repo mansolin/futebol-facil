@@ -3,8 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navItems = [];
-
 function HomeIcon() {
     return (
         <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -38,6 +36,13 @@ function UserIcon() {
         </svg>
     );
 }
+
+const navItems = [
+    { href: '/dashboard', label: 'Início', icon: HomeIcon },
+    { href: '/partidas', label: 'Partidas', icon: MatchIcon },
+    { href: '/pagamentos', label: 'Pagamentos', icon: PayIcon },
+    { href: '/perfil', label: 'Perfil', icon: UserIcon },
+];
 
 export default function BottomNav() {
     const pathname = usePathname();
