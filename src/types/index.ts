@@ -10,7 +10,7 @@ export interface UserProfile {
 }
 
 export interface MatchParticipant {
-    status: 'confirmed' | 'declined';
+    status: 'confirmed' | 'declined' | 'pending';
     paid: boolean;
 }
 
