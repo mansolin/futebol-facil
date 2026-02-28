@@ -48,7 +48,7 @@ export default function DashboardPage() {
                 {/* Custom Header */}
                 <div className="flex items-center justify-between mb-8 mt-4 fade-in">
                     <div className="flex items-center gap-4">
-                        <div className="relative">
+                        <Link href="/perfil" className="relative">
                             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--primary)] to-green-600 flex items-center justify-center shadow-[0_0_15px_rgba(0,255,100,0.3)] border-2 border-[var(--primary)]">
                                 {profile.photoURL ? (
                                     <img src={profile.photoURL} alt={profile.displayName} className="w-full h-full rounded-full object-cover" />
@@ -57,7 +57,7 @@ export default function DashboardPage() {
                                 )}
                             </div>
                             <div className="absolute -bottom-1 -right-1 bg-[var(--primary)] text-black w-5 h-5 rounded-full flex items-center justify-center text-xs font-black border border-black shadow-sm">+</div>
-                        </div>
+                        </Link>
                         <div>
                             <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-0.5">Atleta</p>
                             <h2 className="text-xl font-black text-white leading-none">{profile.displayName?.split(' ')[0]} {profile.displayName?.split(' ')[1] || ''}</h2>
