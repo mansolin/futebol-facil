@@ -158,7 +158,6 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                                 </h3>
                             </div>
                             <div className="flex gap-4 text-[8px] font-black text-white/40 uppercase tracking-widest pr-3">
-                                <span>Comprovante</span>
                                 <span>Pago</span>
                             </div>
                         </div>
@@ -167,20 +166,20 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                             {participantsArray.filter(p => p.status === 'confirmed').map((p, i, arr) => {
                                 const pProfile = participantProfiles[p.uid];
                                 const displayName = p.uid === user?.uid ? (profile?.displayName ?? 'Você') : (pProfile?.displayName ?? 'Jogador');
+                                const isPaid = (pProfile?.credits ?? 0) >= match.pricePerPlayer;
 
                                 return (
                                     <div key={p.uid} className={`flex items-center justify-between p-3.5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} hover:bg-white/5 transition-colors`}>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-4 h-4 rounded-full bg-[var(--primary)] text-black flex items-center justify-center text-[10px] shadow-[0_0_8px_rgba(0,255,100,0.4)]">✓</div>
+                                            <img src={pProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`} alt={displayName} className="w-8 h-8 rounded-full object-cover" />
                                             <span className="text-[13px] font-bold text-white">{displayName}</span>
                                         </div>
-                                        <div className="flex items-center gap-7 pr-3">
-                                            <span className="text-[var(--primary)] text-base opacity-80 cursor-pointer hover:opacity-100 transition-opacity">🧾</span>
+                                        <div className="flex items-center gap-3">
                                             <div
-                                                onClick={() => handleTogglePayment(p.uid, p.paid)}
-                                                className={`w-[18px] h-[18px] rounded-[4px] border border-white/20 flex items-center justify-center cursor-pointer transition-all ${p.paid ? 'bg-[var(--primary)] border-[var(--primary)]' : 'bg-transparent hover:border-white/40'} ${isOwner ? '' : 'pointer-events-none opacity-80'}`}
+                                                title={isPaid ? "Pagamento confirmado via créditos" : "Créditos insuficientes"}
+                                                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isPaid ? 'bg-[var(--primary)] border-[var(--primary)]' : 'bg-transparent border-white/20'}`}
                                             >
-                                                {p.paid && <span className="text-black text-[12px] font-black leading-none pt-0.5">✓</span>}
+                                                {isPaid && <span className="text-black text-sm font-black leading-none">✓</span>}
                                             </div>
                                         </div>
                                     </div>
@@ -189,6 +188,20 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                         </div>
                     </div>
                 )}
+
+                {/* Pendentes */}
+                <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-[3px] h-4 bg-yellow-500"></div>
+                        <h3 className="text-[11px] font-black tracking-widest text-yellow-500 uppercase">
+                            Pendentes
+                        </h3>
+                    </div>
+                    <div className="border border-dashed border-white/10 rounded-xl p-4 text-center text-sm text-white/50 bg-[#0A0D14]/30">
+                        <p>Ainda não há jogadores pendentes.</p>
+                        <p className="text-xs text-white/30">Jogadores convidados aparecerão aqui.</p>
+                    </div>
+                </div>
 
                 {/* Recusados */}
                 {participantsArray.filter(p => p.status === 'declined').length > 0 && (
@@ -208,7 +221,7 @@ export default function MatchDetailPage({ params }: { params: { id: string } }) 
                                 return (
                                     <div key={p.uid} className={`flex items-center justify-between p-3.5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''} opacity-50 grayscale`}>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-4 h-4 rounded-full bg-[#EF4444] text-white flex items-center justify-center text-[8px] font-black">X</div>
+                                            <img src={pProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`} alt={displayName} className="w-8 h-8 rounded-full object-cover" />
                                             <span className="text-[13px] font-bold text-white line-through">{displayName}</span>
                                         </div>
                                     </div>
